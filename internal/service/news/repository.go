@@ -8,7 +8,7 @@ import (
 )
 
 func GetAllNews() ([]News, error) {
-	rows, err := utils.DB.Edu.Query("SELECT id, title, content, image FROM news")
+	rows, err := utils.DB.News.Query("SELECT id, title, content, image FROM news")
 	if err != nil {
 		return nil, err
 	}
@@ -26,12 +26,12 @@ func GetAllNews() ([]News, error) {
 }
 
 func AddNews(news News) error {
-	_, err := utils.DB.Edu.Exec("INSERT INTO news (title, content, image) VALUES ($1, $2, $3)", news.Title, news.Content, news.Image)
+	_, err := utils.DB.News.Exec("INSERT INTO news (title, content, image) VALUES ($1, $2, $3)", news.Title, news.Content, news.Image)
 	return err
 }
 
 func UpdateNewsByID(news News) error {
-	result, err := utils.DB.Edu.Exec("UPDATE news SET title=$1, content=$2, image=$3 WHERE id=$4", news.Title, news.Content, news.Image, news.ID)
+	result, err := utils.DB.News.Exec("UPDATE news SET title=$1, content=$2, image=$3 WHERE id=$4", news.Title, news.Content, news.Image, news.ID)
 	if err != nil {
 		return err
 	}
@@ -43,7 +43,7 @@ func UpdateNewsByID(news News) error {
 }
 
 func DeleteNewsByID(id int) error {
-	result, err := utils.DB.Edu.Exec("DELETE FROM news WHERE id=$1", id)
+	result, err := utils.DB.News.Exec("DELETE FROM news WHERE id=$1", id)
 	if err != nil {
 		return err
 	}

@@ -9,12 +9,6 @@ type Config struct {
 	AuthPassword string `mapstructure:"AUTHPASSWORD"`
 	AuthName     string `mapstructure:"AUTHDATABASE"`
 
-	EduHost     string `mapstructure:"EDUHOST"`
-	EduPort     string `mapstructure:"EDUPORT"`
-	EduUser     string `mapstructure:"EDUUSER"`
-	EduPassword string `mapstructure:"EDUPASSWORD"`
-	EduName     string `mapstructure:"EDUDATABASE"`
-
 	NewsHost     string `mapstructure:"NEWSHOST"`
 	NewsPort     string `mapstructure:"NEWSPORT"`
 	NewsUser     string `mapstructure:"NEWSUSER"`
@@ -28,6 +22,8 @@ type Config struct {
 	KeycloakURL      string `mapstructure:"KEYCLOAK_URL"`
 	KeycloakRealm    string `mapstructure:"KEYCLOAK_REALM"`
 	KeycloakClientID string `mapstructure:"KEYCLOAK_CLIENT_ID"`
+
+	SidecarAddress string `mapstructure:"SIDECAR_ADDRESSS"`
 }
 
 func LoadConfig(path string) (config Config, err error) {

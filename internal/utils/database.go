@@ -12,7 +12,6 @@ import (
 // DBConnections структура для хранения соединений с БД
 type DBConnections struct {
 	Auth *sql.DB // База данных для авторизации
-	Edu  *sql.DB // База данных для образования
 	News *sql.DB //База данных для новостей
 }
 
@@ -24,9 +23,6 @@ func InitDatabase(config configs.Config) {
 	// Строки подключения для обеих баз данных
 	authConnStr := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable",
 		config.AuthHost, config.AuthPort, config.AuthUser, config.AuthPassword, config.AuthName)
-
-	eduConnStr := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable",
-		config.EduHost, config.EduPort, config.EduUser, config.EduPassword, config.EduName)
 
 	newsConnStr := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable",
 		config.NewsHost, config.NewsPort, config.NewsUser, config.NewsPassword, config.NewsName)
@@ -45,20 +41,6 @@ func InitDatabase(config configs.Config) {
 		log.Fatal("Ошибка при выполнении запроса к базе данных Auth:", err)
 	}
 	log.Println("Подключение к базе данных Auth успешно установлено. Статус:", authDBPingStatus)
-
-	// Подключаемся ко второй базе (edu)
-	DB.Edu, err = sql.Open("postgres", eduConnStr)
-	if err != nil {
-		log.Fatal("Ошибка при подключении к базе данных Edu: ", err)
-	}
-
-	// Проверка выполнения запроса в БД Edu
-	var eduDBPingStatus string
-	err = DB.Edu.QueryRow("SELECT * FROM test").Scan(&eduDBPingStatus)
-	if err != nil {
-		log.Fatal("Ошибка при выполнении запроса к базе данных Edu:", err)
-	}
-	log.Println("Подключение к базе данных Edu успешно установлено. Статус:", eduDBPingStatus)
 
 	DB.News, err = sql.Open("postgres", newsConnStr)
 	if err != nil {
@@ -84,14 +66,6 @@ func CloseDB() {
 			log.Printf("Ошибка при закрытии соединения с базой данных Auth: %v", err)
 		} else {
 			log.Println("Соединение с базой данных Auth закрыто.")
-		}
-	}
-	if DB.Edu != nil {
-		err := DB.Edu.Close()
-		if err != nil {
-			log.Printf("Ошибка при закрытии соединения с базой данных Edu: %v", err)
-		} else {
-			log.Println("Соединение с базой данных Edu закрыто.")
 		}
 	}
 	if DB.News != nil {
