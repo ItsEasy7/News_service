@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: dockerhub.timeweb.cloud/postgres:16.2
+    container_name: postgres
+    restart: always
+    env_file: ../process.env
+    ports:
+      - "5432:5432"
+    volumes:
+      - "$HOME/docker/volumes/postgres:/var/lib/postgresql/data"
+    networks:
+        - newsnet
+
+  pgadmin:
+    image: docker.io/dpage/pgadmin4:latest
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "hehe@mail.ru"
+      PGADMIN_DEFAULT_PASSWORD: "qazedcXfe24"
+      PGADMIN_LISTEN_PORT: 80 
+    ports: 
+      - 15432:80 
+    depends_on: 
+      - postgres 
+    networks: 
+        - newsnet
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    hostname: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "15672:15672"
+    networks:
+      - newsnet
+
+  news-service:
+    build:
+      context: ..
+      dockerfile: build/Dockerfile
+    env_file: ../process.env
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+    networks:
+      - newsnet
+
+  # image-service:
+  #   build: ./image_service
+  #   environment:
+  #     RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+  #     UPLOAD_DIR: /app/uploads
+  #   ports:
+  #     - "8081:8081"
+  #   volumes:
+  #     - uploads:/app/uploads
+  #   depends_on:
+  #     rabbitmq:
+  #       condition: service_started
+  #   networks:
+  #     - newsnet
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "3030:3030"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - newsnet
+
+volumes:
+  postgres_data:
+  uploads:
+
+networks:
+  newsnet:
+    driver: bridge
