@@ -19,15 +19,23 @@ func GetNews(c *gin.Context) {
 
 // CreateNews обрабатывает запрос на создание новой новости
 func CreateNews(c *gin.Context) {
-	var news News
-	if err := c.ShouldBindJSON(&news); err != nil {
+	var req RequestNews
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err := AddNews(news); err != nil {
+
+	newNews := News{
+		Title:   req.Title,
+		Content: req.Content,
+		Image:   req.Image,
+	}
+
+	if err := AddNews(newNews); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
 	c.Status(http.StatusCreated)
 }
 

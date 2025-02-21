@@ -22,10 +22,10 @@ var DB DBConnections
 func InitDatabase(config configs.Config) {
 	// Строки подключения для обеих баз данных
 	authConnStr := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable",
-		config.AuthHost, config.AuthPort, config.AuthUser, config.AuthPassword, config.AuthName)
+		config.AuthUser, config.AuthPassword, config.AuthName, config.AuthHost, config.AuthPort)
 
 	newsConnStr := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable",
-		config.NewsHost, config.NewsPort, config.NewsUser, config.NewsPassword, config.NewsName)
+		config.NewsUser, config.NewsPassword, config.NewsName, config.NewsHost, config.NewsPort)
 
 	// Подключаемся к первой базе (auth)
 	var err error
@@ -36,7 +36,7 @@ func InitDatabase(config configs.Config) {
 
 	// Проверка выполнения запроса в БД Auth
 	var authDBPingStatus string
-	err = DB.Auth.QueryRow("SELECT * FROM test").Scan(&authDBPingStatus)
+	err = DB.Auth.QueryRow("SELECT 1 FROM users").Scan(&authDBPingStatus)
 	if err != nil {
 		log.Fatal("Ошибка при выполнении запроса к базе данных Auth:", err)
 	}
@@ -49,7 +49,7 @@ func InitDatabase(config configs.Config) {
 
 	// Проверка выполнения запроса в БД Edu
 	var newsDBPingStatus string
-	err = DB.News.QueryRow("SELECT * FROM test").Scan(&newsDBPingStatus)
+	err = DB.News.QueryRow("SELECT 1 FROM articles").Scan(&newsDBPingStatus)
 	if err != nil {
 		log.Fatal("Ошибка при выполнении запроса к базе данных Edu:", err)
 	}

@@ -1,6 +1,10 @@
 package configs
 
-import "github.com/spf13/viper"
+import (
+	"fmt"
+
+	"github.com/spf13/viper"
+)
 
 type Config struct {
 	AuthHost     string `mapstructure:"AUTHHOST"`
@@ -26,17 +30,16 @@ type Config struct {
 	SidecarAddress string `mapstructure:"SIDECAR_ADDRESSS"`
 }
 
-func LoadConfig(path string) (config Config, err error) {
-	viper.AddConfigPath(path)
-	viper.SetConfigName("app")
+func LoadConfig() (config Config, err error) {
+	viper.SetConfigFile(".env")
 	viper.SetConfigType("env")
-	viper.AutomaticEnv()
 
 	err = viper.ReadInConfig()
 	if err != nil {
-		return
+		fmt.Println("Ошибка чтения конфига:", err)
 	}
 
+	viper.AutomaticEnv()
 	err = viper.Unmarshal(&config)
 	return
 }

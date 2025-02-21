@@ -3,17 +3,22 @@ package news
 import (
 	"Gogogo/internal/utils"
 	"errors"
+	"fmt"
 
 	_ "github.com/lib/pq"
 )
 
 func GetAllNews() ([]News, error) {
-	rows, err := utils.DB.News.Query("SELECT id, title, content, image FROM news")
+	rows, err := utils.DB.News.Query(`
+	SELECT ar.id as ID, ar.title as Title, ar.file_path as Content, im.file_path as Image
+	FROM articles ar
+	LEFT JOIN images im ON ar.id = im.article_id
+	`)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-
+	fmt.Println(rows)
 	var newsList []News
 	for rows.Next() {
 		var news News
@@ -22,6 +27,7 @@ func GetAllNews() ([]News, error) {
 		}
 		newsList = append(newsList, news)
 	}
+	fmt.Println(newsList)
 	return newsList, nil
 }
 
